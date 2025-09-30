@@ -35,7 +35,7 @@ const skills = [
     category: "mobile",
     icon: <Smartphone className="h-5 w-5" />,
     badge: "⚛️",
-    note: "MVP nhanh, cross-platform",
+    note: "fast MVP, cross-platform",
   },
   {
     name: "TypeScript",
