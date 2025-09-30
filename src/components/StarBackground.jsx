@@ -1,94 +1,96 @@
 import { useEffect, useState } from "react";
 
-// id, size, x, y, opacity, animationDuration
-// id, size, x, y, delay, animationDuration
-
+// id, size, x, y, opacity
 export const StarBackground = () => {
-  const [stars, setStars] = useState([]);
-  const [meteors, setMeteors] = useState([]);
+  // 5 shape với vị trí và kích thước cố định
+  const shapes = [
+    { id: 1, size: 13, x: 10, y: 18, opacity: 0.45 },
+    { id: 2, size: 10, x: 80, y: 12, opacity: 0.35 },
+    { id: 3, size: 9, x: 50, y: 40, opacity: 0.32 },
+    { id: 4, size: 12, x: 90, y: 75, opacity: 0.38 },
+    { id: 5, size: 8, x: 25, y: 80, opacity: 0.28 },
+    { id: 6, size: 11, x: 60, y: 65, opacity: 0.3 },
+    { id: 7, size: 7, x: 35, y: 10, opacity: 0.26 },
+    { id: 8, size: 10, x: 5, y: 70, opacity: 0.29 },
+    { id: 9, size: 8, x: 15, y: 55, opacity: 0.22 },
+    { id: 10, size: 7, x: 75, y: 55, opacity: 0.21 },
+    { id: 11, size: 6, x: 60, y: 25, opacity: 0.18 },
+    { id: 12, size: 9, x: 40, y: 75, opacity: 0.23 },
+    { id: 13, size: 8, x: 85, y: 35, opacity: 0.19 },
+    { id: 14, size: 7, x: 30, y: 60, opacity: 0.17 },
+    { id: 15, size: 6, x: 55, y: 85, opacity: 0.15 },
+    { id: 16, size: 8, x: 70, y: 85, opacity: 0.16 },
+    { id: 17, size: 7, x: 20, y: 30, opacity: 0.18 },
+    { id: 18, size: 6, x: 45, y: 15, opacity: 0.14 },
+  ];
+  const [isDark, setIsDark] = useState(() =>
+    typeof window !== "undefined"
+      ? document.documentElement.classList.contains("dark")
+      : false
+  );
 
   useEffect(() => {
-    generateStars();
-    generateMeteors();
-
-    const handleResize = () => {
-      generateStars();
+    let observer;
+    if (typeof window !== "undefined") {
+      observer = new MutationObserver(() => {
+        setIsDark(document.documentElement.classList.contains("dark"));
+      });
+      observer.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ["class"],
+      });
+    }
+    return () => {
+      if (observer) observer.disconnect();
     };
-
-    window.addEventListener("resize", handleResize);
-
-    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const generateStars = () => {
-    const numberOfStars = Math.floor(
-      (window.innerWidth * window.innerHeight) / 10000
-    );
-
-    const newStars = [];
-
-    for (let i = 0; i < numberOfStars; i++) {
-      newStars.push({
-        id: i,
-        size: Math.random() * 3 + 1,
-        x: Math.random() * 100,
-        y: Math.random() * 100,
-        opacity: Math.random() * 0.5 + 0.5,
-        animationDuration: Math.random() * 4 + 2,
-      });
-    }
-
-    setStars(newStars);
-  };
-
-  const generateMeteors = () => {
-    const numberOfMeteors = 4;
-    const newMeteors = [];
-
-    for (let i = 0; i < numberOfMeteors; i++) {
-      newMeteors.push({
-        id: i,
-        size: Math.random() * 2 + 1,
-        x: Math.random() * 100,
-        y: Math.random() * 20,
-        delay: Math.random() * 15,
-        animationDuration: Math.random() * 3 + 3,
-      });
-    }
-
-    setMeteors(newMeteors);
-  };
+  // Màu sắc phù hợp Classic Blue, nam tính, hiện đại
+  const mainColor = isDark ? "#23395d" : "#34568B";
+  const accentColor = isDark ? "#2d4263" : "#5d8fd3";
+  const shadowColor = isDark ? "#23395d55" : "#34568B33";
 
   return (
     <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
-      {stars.map((star) => (
-        <div
-          key={star.id}
-          className="star animate-pulse-subtle"
+      {shapes.map((shape) => (
+        <svg
+          key={shape.id}
+          className="absolute animate-bubble"
           style={{
-            width: star.size + "px",
-            height: star.size + "px",
-            left: star.x + "%",
-            top: star.y + "%",
-            opacity: star.opacity,
-            animationDuration: star.animationDuration + "s",
+            width: shape.size * 32 + "px",
+            height: shape.size * 32 + "px",
+            left: shape.x + "%",
+            top: shape.y + "%",
+            opacity: shape.opacity,
+            filter: "blur(0.5px)",
+            mixBlendMode: "lighten",
+            animationDuration: "12s",
           }}
-        />
-      ))}
-
-      {meteors.map((meteor) => (
-        <div
-          key={meteor.id}
-          className="meteor animate-meteor"
-          style={{
-            width: meteor.size * 50 + "px",
-            height: meteor.size * 2 + "px",
-            left: meteor.x + "%",
-            top: meteor.y + "%",
-            animationDelay: meteor.delay,
-            animationDuration: meteor.animationDuration + "s",
-          }}
-        />
+        >
+          {/* Hình lục giác hiện đại, nam tính */}
+          <polygon
+            points="50,10 90,32 90,78 50,100 10,78 10,32"
+            fill={`url(#grad${shape.id})`}
+            stroke={accentColor}
+            strokeWidth="4"
+            style={{
+              filter: `drop-shadow(0 0 40px ${shadowColor})`,
+            }}
+          />
+          <defs>
+            <linearGradient
+              id={`grad${shape.id}`}
+              x1="0"
+              y1="0"
+              x2="100"
+              y2="100"
+              gradientUnits="userSpaceOnUse"
+            >
+              <stop offset="0%" stopColor={mainColor} stopOpacity="0.9" />
+              <stop offset="100%" stopColor={accentColor} stopOpacity="0.7" />
+            </linearGradient>
+          </defs>
+        </svg>
       ))}
     </div>
   );
